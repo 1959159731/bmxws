@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.safe.dao.SafeProManagerPersonDao">
+    
+	<sql id="safeProManagerPersonColumns">
+		a.id AS "id",
+		a.project_name AS "proSimpleInfo.id",
+		a.contract_section_type AS "contractSectionType",
+		a.contract_section_label AS "contractSectionLabel",
+		a.construction_name AS "constructionName",
+		a.name AS "name",
+		a.safety_production_certnumber AS "safetyProductionCertnumber",
+		a.certificate_valid AS "certificateValid",
+		a.certificate_path AS "certificatePath",
+		a.job_title AS "jobTitle",
+		a.positon AS "positon",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		p.project_simple_name AS "proSimpleInfo.projectSimpleName"
+		
+	</sql>
+	
+	<sql id="safeProManagerPersonJoins">
+		LEFT JOIN pro_simple_info p ON p.id = a.project_name
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="SafeProManagerPerson">
+		SELECT 
+			<include refid="safeProManagerPersonColumns"/>
+		FROM safe_pro_manager_person a
+		<include refid="safeProManagerPersonJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SafeProManagerPerson">
+		SELECT 
+			<include refid="safeProManagerPersonColumns"/>
+		FROM safe_pro_manager_person a
+		<include refid="safeProManagerPersonJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="proSimpleInfo != null">
+				<if test="proSimpleInfo.id != null and proSimpleInfo.id != ''">
+					AND a.project_name = #{proSimpleInfo.id }
+				</if>
+			</if>
+			<if test="contractSectionLabel != null and contractSectionLabel != ''">
+				AND a.contract_section_label = #{contractSectionLabel}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SafeProManagerPerson">
+		SELECT 
+			<include refid="safeProManagerPersonColumns"/>
+		FROM safe_pro_manager_person a
+		<include refid="safeProManagerPersonJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findContractLabel" resultType="java.lang.String">
+		SELECT DISTINCT a.contract_section_label 
+		FROM safe_pro_manager_person a
+		WHERE a.project_name = #{projectId }
+	</select>
+	
+	
+	<insert id="insert">
+		INSERT INTO safe_pro_manager_person(
+			id,
+			project_name,
+			contract_section_type,
+			contract_section_label,
+			construction_name,
+			name,
+			safety_production_certnumber,
+			certificate_valid,
+			certificate_path,
+			job_title,
+			positon,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{proSimpleInfo.id},
+			#{contractSectionType},
+			#{contractSectionLabel},
+			#{constructionName},
+			#{name},
+			#{safetyProductionCertnumber},
+			#{certificateValid},
+			#{certificatePath},
+			#{jobTitle},
+			#{positon},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE safe_pro_manager_person SET 	
+			project_name = #{proSimpleInfo.id},
+			contract_section_type = #{contractSectionType},
+			contract_section_label = #{contractSectionLabel},
+			construction_name = #{constructionName},
+			name = #{name},
+			safety_production_certnumber = #{safetyProductionCertnumber},
+			certificate_valid = #{certificateValid},
+			certificate_path = #{certificatePath},
+			job_title = #{jobTitle},
+			positon = #{positon},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE safe_pro_manager_person SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

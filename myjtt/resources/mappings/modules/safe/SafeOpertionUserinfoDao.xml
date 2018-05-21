@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.safe.dao.SafeOpertionUserinfoDao">
+    
+	<sql id="safeOpertionUserinfoColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.cid AS "cid",
+		a.gender AS "gender",
+		a.certificate_no AS "certificateNo",
+		a.certificate_valid AS "certificateValid",
+		a.work_site AS "workSite",
+		a.opertion_user_type AS "opertionUserType",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="safeOpertionUserinfoJoins">
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="SafeOpertionUserinfo">
+		SELECT 
+			<include refid="safeOpertionUserinfoColumns"/>
+		FROM safe_opertion_userinfo a
+		<include refid="safeOpertionUserinfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SafeOpertionUserinfo">
+		SELECT 
+			<include refid="safeOpertionUserinfoColumns"/>
+		FROM safe_opertion_userinfo a
+		<include refid="safeOpertionUserinfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="certificateNo != null and certificateNo != ''">
+				AND a.certificate_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{certificateNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{certificateNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{certificateNo},'%')</if>
+			</if>
+			<if test="opertionUserType != null and opertionUserType != ''">
+				AND a.opertion_user_type = #{opertionUserType}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SafeOpertionUserinfo">
+		SELECT 
+			<include refid="safeOpertionUserinfoColumns"/>
+		FROM safe_opertion_userinfo a
+		<include refid="safeOpertionUserinfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO safe_opertion_userinfo(
+			id,
+			name,
+			cid,
+			gender,
+			certificate_no,
+			certificate_valid,
+			work_site,
+			opertion_user_type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{cid},
+			#{gender},
+			#{certificateNo},
+			#{certificateValid},
+			#{workSite},
+			#{opertionUserType},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE safe_opertion_userinfo SET 	
+			name = #{name},
+			cid = #{cid},
+			gender = #{gender},
+			certificate_no = #{certificateNo},
+			certificate_valid = #{certificateValid},
+			work_site = #{workSite},
+			opertion_user_type = #{opertionUserType},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE safe_opertion_userinfo SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

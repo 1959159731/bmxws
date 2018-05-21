@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.quality.dao.QualitySupervisonInfoDao">
+    
+	<sql id="qualitySupervisonInfoColumns">
+		a.id AS "id",
+		a.project_id AS "proSimpleInfo.id",
+		a.contract_section_type AS "contractSectionType",
+		a.contract_section_label AS "contractSectionLabel",
+		a.supervision_name AS "supervisionName",
+		a.have_contract_section_label AS "haveContractSectionLabel",
+		a.starting_station AS "startingStation",
+		a.ending_station AS "endingStation",
+		a.supervision_service_fee AS "supervisionServiceFee",
+		a.supervision_project_costs AS "supervisionProjectCosts",
+		a.supervision_contract_start AS "supervisionContractStart",
+		a.supervision_contract_end AS "supervisionContractEnd",
+		a.principal AS "principal",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		p.project_simple_name AS "proSimpleInfo.projectSimpleName"
+	</sql>
+	
+	<sql id="qualitySupervisonInfoJoins">
+		LEFT JOIN pro_simple_info p ON p.id = a.project_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="QualitySupervisonInfo">
+		SELECT 
+			<include refid="qualitySupervisonInfoColumns"/>
+		FROM quality_supervison_info a
+		<include refid="qualitySupervisonInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="QualitySupervisonInfo">
+		SELECT 
+			<include refid="qualitySupervisonInfoColumns"/>
+		FROM quality_supervison_info a
+		<include refid="qualitySupervisonInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="proSimpleInfo != null">
+				<if test="proSimpleInfo.id != null and proSimpleInfo.id != ''">
+					AND a.project_id = #{proSimpleInfo.id }
+				</if>
+			</if>
+			<if test="contractSectionLabel != null and contractSectionLabel != ''">
+				AND a.contract_section_label LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contractSectionLabel}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contractSectionLabel}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contractSectionLabel},'%')</if>
+			</if>
+			<if test="supervisionName != null and supervisionName != ''">
+				AND a.supervision_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{supervisionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{supervisionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{supervisionName},'%')</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QualitySupervisonInfo">
+		SELECT 
+			<include refid="qualitySupervisonInfoColumns"/>
+		FROM quality_supervison_info a
+		<include refid="qualitySupervisonInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>	
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findAllCons" resultType="java.lang.String">
+		SELECT DISTINCT a.supervision_name
+		FROM quality_supervison_info a
+	</select>
+	
+	<!-- 根据项目ID查找监理单位名称 -->
+	<select id="findSupervisonCompanyName" resultType="java.lang.String">
+		SELECT DISTINCT a.supervision_name
+		FROM quality_supervison_info a
+		WHERE a.project_id = #{projectId}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO quality_supervison_info(
+			id,
+			project_id,
+			contract_section_type,
+			contract_section_label,
+			supervision_name,
+			have_contract_section_label,
+			starting_station,
+			ending_station,
+			supervision_service_fee,
+			supervision_project_costs,
+			supervision_contract_start,
+			supervision_contract_end,
+			principal,
+			remarks,
+			create_by,
+			update_by,
+			create_date,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{proSimpleInfo.id},
+			#{contractSectionType},
+			#{contractSectionLabel},
+			#{supervisionName},
+			#{haveContractSectionLabel},
+			#{startingStation},
+			#{endingStation},
+			#{supervisionServiceFee},
+			#{supervisionProjectCosts},
+			#{supervisionContractStart},
+			#{supervisionContractEnd},
+			#{principal},
+			#{remarks},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_supervison_info SET 	
+			project_id = #{proSimpleInfo.id},
+			contract_section_type = #{contractSectionType},
+			contract_section_label = #{contractSectionLabel},
+			supervision_name = #{supervisionName},
+			have_contract_section_label = #{haveContractSectionLabel},
+			starting_station = #{startingStation},
+			ending_station = #{endingStation},
+			supervision_service_fee = #{supervisionServiceFee},
+			supervision_project_costs = #{supervisionProjectCosts},
+			supervision_contract_start = #{supervisionContractStart},
+			supervision_contract_end = #{supervisionContractEnd},
+			principal = #{principal},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE quality_supervison_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

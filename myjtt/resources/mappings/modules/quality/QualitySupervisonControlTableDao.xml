@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.quality.dao.QualitySupervisonControlTableDao">
+    
+	<sql id="qualitySupervisonControlTableColumns">
+		a.id AS "id",
+		a.supervison_name AS "supervisonName",
+		a.contract_username AS "contractUsername",
+		a.contract_post AS "contractPost",
+		a.contract_job_title AS "contractJobTitle",
+		a.incoming_username AS "incomingUsername",
+		a.incoming_post AS "incomingPost",
+		a.incoming_job_title AS "incomingJobTitle",
+		a.incoming_cid AS "incomingCid",
+		a.incoming_certificate_no AS "incomingCertificateNo",
+		a.is_register AS "isRegister",
+		a.incoming_approach_time AS "incomingApproachTime",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="qualitySupervisonControlTableJoins">
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="QualitySupervisonControlTable">
+		SELECT 
+			<include refid="qualitySupervisonControlTableColumns"/>
+		FROM quality_supervison_control_table a
+		<include refid="qualitySupervisonControlTableJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="QualitySupervisonControlTable">
+		SELECT 
+			<include refid="qualitySupervisonControlTableColumns"/>
+		FROM quality_supervison_control_table a
+		<include refid="qualitySupervisonControlTableJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supervisonName != null and supervisonName != ''">
+				AND a.supervison_name = #{supervisonName}
+			</if>
+			<if test="incomingUsername != null and incomingUsername != ''">
+				AND a.incoming_username LIKE 
+					<if test="dbName == 'oracle'">'%'||#{incomingUsername}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{incomingUsername}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{incomingUsername},'%')</if>
+			</if>
+			<if test="isRegister != null and isRegister != ''">
+				AND a.is_register = #{isRegister}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QualitySupervisonControlTable">
+		SELECT 
+			<include refid="qualitySupervisonControlTableColumns"/>
+		FROM quality_supervison_control_table a
+		<include refid="qualitySupervisonControlTableJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO quality_supervison_control_table(
+			id,
+			supervison_name,
+			contract_username,
+			contract_post,
+			contract_job_title,
+			incoming_username,
+			incoming_post,
+			incoming_job_title,
+			incoming_cid,
+			incoming_certificate_no,
+			is_register,
+			incoming_approach_time,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{supervisonName},
+			#{contractUsername},
+			#{contractPost},
+			#{contractJobTitle},
+			#{incomingUsername},
+			#{incomingPost},
+			#{incomingJobTitle},
+			#{incomingCid},
+			#{incomingCertificateNo},
+			#{isRegister},
+			#{incomingApproachTime},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_supervison_control_table SET 	
+			supervison_name = #{supervisonName},
+			contract_username = #{contractUsername},
+			contract_post = #{contractPost},
+			contract_job_title = #{contractJobTitle},
+			incoming_username = #{incomingUsername},
+			incoming_post = #{incomingPost},
+			incoming_job_title = #{incomingJobTitle},
+			incoming_cid = #{incomingCid},
+			incoming_certificate_no = #{incomingCertificateNo},
+			is_register = #{isRegister},
+			incoming_approach_time = #{incomingApproachTime},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE quality_supervison_control_table SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.ssp.dao.QualitySafeDao">
+
+	<select id="get" resultType="QualitySafe" >
+		SELECT *
+		FROM quality_safe_info a WHERE a.id = #{id}
+	</select>
+	
+
+	<select id="findList" resultType="QualitySafe">
+		SELECT * FROM quality_safe_info 
+		WHERE flag='DEL_FLAG_NORMAL'
+	</select>
+	
+
+	
+	<insert id="insert">
+		INSERT INTO quality_safe_info(
+			id,
+			projectSimpleName,
+			contract_section_label,
+			dangerous_title,
+			safe_message,
+			photo,
+			flag
+		) VALUES (
+			#{id},
+			#{projectSimpleName},
+			#{contractSectionLabel},
+			#{dangerousTitle},
+			#{safeMessage},
+			#{photo},
+			default
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_safe_info SET 	
+			id = #{id},
+			projectSimpleName = #{projectSimpleName},
+			contract_section_label = #{contractSectionLabel},
+			dangerous_title = #{dangerousTitle},
+			safe_message = #{safeMessage},
+			photo = #{photo},
+			flag='DEL_FLAG_NORMAL'
+			WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE quality_safe_info SET flag='DEL_FLAG_DELETE'  WHERE id=#{id}
+	</update>
+	
+	
+	
+</mapper>

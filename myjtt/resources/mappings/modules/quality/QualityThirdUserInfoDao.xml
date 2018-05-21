@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.quality.dao.QualityThirdUserInfoDao">
+    
+	<sql id="qualityThirdUserInfoColumns">
+		a.id AS "id",
+		a.contract_section_label AS "qualityThirdCheckInfo.id",
+		a.contract_context AS "contractContext",
+		a.office_equi AS "officeEqui",
+		a.approach_user AS "approachUser",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		p.contract_section_label AS "qualityThirdCheckInfo.contractSectionLabel",
+		p.detection_unit AS "qualityThirdCheckInfo.detectionUnit"
+	</sql>
+	
+	<sql id="qualityThirdUserInfoJoins">
+		LEFT JOIN quality_third_check_info p ON p.id = a.contract_section_label
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="QualityThirdUserInfo">
+		SELECT 
+			<include refid="qualityThirdUserInfoColumns"/>
+		FROM quality_third_user_info a
+		<include refid="qualityThirdUserInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="QualityThirdUserInfo">
+		SELECT 
+			<include refid="qualityThirdUserInfoColumns"/>
+		FROM quality_third_user_info a
+		<include refid="qualityThirdUserInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="qualityThirdCheckInfo != null">
+				<if test="qualityThirdCheckInfo.id != null and qualityThirdCheckInfo.id != ''">
+					AND a.contract_section_label = #{qualityThirdCheckInfo.id }
+				</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QualityThirdUserInfo">
+		SELECT 
+			<include refid="qualityThirdUserInfoColumns"/>
+		FROM quality_third_user_info a
+		<include refid="qualityThirdUserInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>	
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO quality_third_user_info(
+			id,
+			contract_section_label,
+			contract_context,
+			office_equi,
+			approach_user,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{qualityThirdCheckInfo.id},
+			#{contractContext},
+			#{officeEqui},
+			#{approachUser},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_third_user_info SET 	
+			contract_section_label = #{qualityThirdCheckInfo.id},
+			contract_context = #{contractContext},
+			office_equi = #{officeEqui},
+			approach_user = #{approachUser},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE quality_third_user_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

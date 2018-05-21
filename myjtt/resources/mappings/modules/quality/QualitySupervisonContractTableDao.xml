@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.quality.dao.QualitySupervisonContractTableDao">
+    
+	<sql id="qualitySupervisonContractTableColumns">
+		a.id AS "id",
+		a.project_id AS "proSimpleInfo.id",
+		a.supervision_name AS "supervisionName",
+		a.contract_total_num AS "contractTotalNum",
+		a.contract_depart_num AS "contractDepartNum",
+		a.contract_training_num AS "contractTrainingNum",
+		a.incoming_total_num AS "incomingTotalNum",
+		a.incoming_depart_num AS "incomingDepartNum",
+		a.incoming_training_num AS "incomingTrainingNum",
+		a.incoming_certificate_rate AS "incomingCertificateRate",
+		a.depart_replace_num AS "departReplaceNum",
+		a.training_replace_num AS "trainingReplaceNum",
+		a.inhigh_is_replaced AS "inhighIsReplaced",
+		a.replcaed_rate AS "replcaedRate",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		p.project_simple_name AS "proSimpleInfo.projectSimpleName"
+	</sql>
+	
+	<sql id="qualitySupervisonContractTableJoins">
+		LEFT JOIN pro_simple_info p ON p.id = a.project_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="QualitySupervisonContractTable">
+		SELECT 
+			<include refid="qualitySupervisonContractTableColumns"/>
+		FROM quality_supervison_contract_table a
+		<include refid="qualitySupervisonContractTableJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="QualitySupervisonContractTable">
+		SELECT 
+			<include refid="qualitySupervisonContractTableColumns"/>
+		FROM quality_supervison_contract_table a
+		<include refid="qualitySupervisonContractTableJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="proSimpleInfo != null">
+				<if test="proSimpleInfo.id != null and proSimpleInfo.id != ''">
+					AND a.project_id = #{proSimpleInfo.id }
+				</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QualitySupervisonContractTable">
+		SELECT 
+			<include refid="qualitySupervisonContractTableColumns"/>
+		FROM quality_supervison_contract_table a
+		<include refid="qualitySupervisonContractTableJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO quality_supervison_contract_table(
+			id,
+			project_id,
+			supervision_name,
+			contract_total_num,
+			contract_depart_num,
+			contract_training_num,
+			incoming_total_num,
+			incoming_depart_num,
+			incoming_training_num,
+			incoming_certificate_rate,
+			depart_replace_num,
+			training_replace_num,
+			inhigh_is_replaced,
+			replcaed_rate,
+			remarks,
+			create_by,
+			update_by,
+			create_date,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{proSimpleInfo.id},
+			#{supervisionName},
+			#{contractTotalNum},
+			#{contractDepartNum},
+			#{contractTrainingNum},
+			#{incomingTotalNum},
+			#{incomingDepartNum},
+			#{incomingTrainingNum},
+			#{incomingCertificateRate},
+			#{departReplaceNum},
+			#{trainingReplaceNum},
+			#{inhighIsReplaced},
+			#{replcaedRate},
+			#{remarks},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_supervison_contract_table SET 	
+			project_id = #{proSimpleInfo.id},
+			supervision_name = #{supervisionName},
+			contract_total_num = #{contractTotalNum},
+			contract_depart_num = #{contractDepartNum},
+			contract_training_num = #{contractTrainingNum},
+			incoming_total_num = #{incomingTotalNum},
+			incoming_depart_num = #{incomingDepartNum},
+			incoming_training_num = #{incomingTrainingNum},
+			incoming_certificate_rate = #{incomingCertificateRate},
+			depart_replace_num = #{departReplaceNum},
+			training_replace_num = #{trainingReplaceNum},
+			inhigh_is_replaced = #{inhighIsReplaced},
+			replcaed_rate = #{replcaedRate},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE quality_supervison_contract_table SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

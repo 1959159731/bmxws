@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.wexin.dao.WxTokenDao">
+    
+	<select id="get" resultType="Dict">
+		SELECT 
+			id as id,
+			wx_token as wxToken,
+			req_time AS reqTime
+		FROM wx_token
+		WHERE id = #{id}
+	</select>
+	
+	<update id="update">
+		UPDATE wx_token SET 
+			wx_token = #{wxToken}, 
+			req_time = #{reqTime}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

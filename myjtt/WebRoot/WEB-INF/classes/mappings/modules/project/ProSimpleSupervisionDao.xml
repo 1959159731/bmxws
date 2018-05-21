@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.project.dao.ProSimpleSupervisionDao">
+    
+	<sql id="proSimpleSupervisionColumns">
+		a.id AS "id",
+		a.project_id AS "projectId",
+		a.contract_section_num AS "contractSectionNum",
+		a.supervision_mode AS "supervisionMode",
+		a.supervision_section_num AS "supervisionSectionNum",
+		a.project_contact_username AS "projectContactUsername",
+		a.project_contact_phone AS "projectContactPhone"
+	</sql>
+	
+	<sql id="proSimpleSupervisionJoins">
+	</sql>
+    
+	<select id="get" resultType="ProSimpleSupervision">
+		SELECT 
+			<include refid="proSimpleSupervisionColumns"/>
+		FROM pro_simple_supervision a
+		<include refid="proSimpleSupervisionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProSimpleSupervision">
+		SELECT 
+			<include refid="proSimpleSupervisionColumns"/>
+		FROM pro_simple_supervision a
+		<include refid="proSimpleSupervisionJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProSimpleSupervision">
+		SELECT 
+			<include refid="proSimpleSupervisionColumns"/>
+		FROM pro_simple_supervision a
+		<include refid="proSimpleSupervisionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pro_simple_supervision(
+			id,
+			project_id,
+			contract_section_num,
+			supervision_mode,
+			supervision_section_num,
+			project_contact_username,
+			project_contact_phone
+		) VALUES (
+			#{id},
+			#{projectId},
+			#{contractSectionNum},
+			#{supervisionMode},
+			#{supervisionSectionNum},
+			#{projectContactUsername},
+			#{projectContactPhone}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pro_simple_supervision SET 	
+			project_id = #{projectId},
+			contract_section_num = #{contractSectionNum},
+			supervision_mode = #{supervisionMode},
+			supervision_section_num = #{supervisionSectionNum},
+			project_contact_username = #{projectContactUsername},
+			project_contact_phone = #{projectContactPhone}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByProjectId">
+		UPDATE pro_simple_supervision SET 	
+			contract_section_num = #{contractSectionNum},
+			supervision_mode = #{supervisionMode},
+			supervision_section_num = #{supervisionSectionNum},
+			project_contact_username = #{projectContactUsername},
+			project_contact_phone = #{projectContactPhone}
+		WHERE project_id = #{projectId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pro_simple_supervision
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

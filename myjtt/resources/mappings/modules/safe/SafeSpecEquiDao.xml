@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.safe.dao.SafeSpecEquiDao">
+    
+	<sql id="safeSpecEquiColumns">
+		a.id AS "id",
+		a.project_name AS "proSimpleInfo.id",
+		a.contract_section_type AS "contractSectionType",
+		a.contract_section_label AS "contractSectionLabel",
+		a.construction_name AS "constructionName",
+		a.management_number AS "managementNumber",
+		a.specification AS "specification",
+		a.manufacturer AS "manufacturer",
+		a.production_date AS "productionDate",
+		a.equipment_source AS "equipmentSource",
+		a.approach_time AS "approachTime",
+		a.exit_time AS "exitTime",
+		a.inspection_certnum AS "inspectionCertnum",
+		a.file_path AS "filePath",
+		a.operator_user AS "operatorUser.id",
+		a.operator_user_other AS "operatorUserOther.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.del_flag AS "delFlag",
+		p.project_simple_name AS "proSimpleInfo.projectSimpleName"
+	</sql>
+	
+	<sql id="safeSpecEquiJoins">
+		LEFT JOIN pro_simple_info p ON p.id = a.project_name
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="SafeSpecEqui">
+		SELECT 
+			<include refid="safeSpecEquiColumns"/>
+		FROM safe_spec_equi a
+		<include refid="safeSpecEquiJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SafeSpecEqui">
+		SELECT 
+			<include refid="safeSpecEquiColumns"/>
+		FROM safe_spec_equi a
+		<include refid="safeSpecEquiJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="proSimpleInfo != null">
+				<if test="proSimpleInfo.id != null and proSimpleInfo.id != ''">
+					AND a.project_name = #{proSimpleInfo.id }
+				</if>
+			</if>
+			<if test="contractSectionLabel != null and contractSectionLabel != ''">
+				AND a.contract_section_label = #{contractSectionLabel}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SafeSpecEqui">
+		SELECT 
+			<include refid="safeSpecEquiColumns"/>
+		FROM safe_spec_equi a
+		<include refid="safeSpecEquiJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findContractLabel" resultType="java.lang.String">
+		SELECT DISTINCT a.contract_section_label 
+		FROM safe_spec_equi a
+		WHERE a.project_name = #{projectId }
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO safe_spec_equi(
+			id,
+			project_name,
+			contract_section_type,
+			contract_section_label,
+			construction_name,
+			management_number,
+			specification,
+			manufacturer,
+			production_date,
+			equipment_source,
+			approach_time,
+			exit_time,
+			inspection_certnum,
+			file_path,
+			operator_user,
+			operator_user_other,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			del_flag
+		) VALUES (
+			#{id},
+			#{proSimpleInfo.id},
+			#{contractSectionType},
+			#{contractSectionLabel},
+			#{constructionName},
+			#{managementNumber},
+			#{specification},
+			#{manufacturer},
+			#{productionDate},
+			#{equipmentSource},
+			#{approachTime},
+			#{exitTime},
+			#{inspectionCertnum},
+			#{filePath},
+			#{operatorUser.id},
+			#{operatorUserOther.id},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE safe_spec_equi SET 	
+			project_name = #{proSimpleInfo.id},
+			contract_section_type = #{contractSectionType},
+			contract_section_label = #{contractSectionLabel},
+			construction_name = #{constructionName},
+			management_number = #{managementNumber},
+			specification = #{specification},
+			manufacturer = #{manufacturer},
+			production_date = #{productionDate},
+			equipment_source = #{equipmentSource},
+			approach_time = #{approachTime},
+			exit_time = #{exitTime},
+			inspection_certnum = #{inspectionCertnum},
+			file_path = #{filePath},
+			operator_user = #{operatorUser.id},
+			operator_user_other = #{operatorUserOther.id},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE safe_spec_equi SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

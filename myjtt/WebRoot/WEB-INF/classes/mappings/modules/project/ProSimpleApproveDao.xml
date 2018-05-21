@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.project.dao.ProSimpleApproveDao">
+    
+	<sql id="proSimpleApproveColumns">
+		a.id AS "id",
+		a.project_id AS "projectId",
+		a.approval_company AS "approvalCompany",
+		a.approval_num AS "approvalNum",
+		a.approval_time AS "approvalTime",
+		a.approval_filepath AS "approvalFilepath",
+		a.workers_approval_company AS "workersApprovalCompany",
+		a.workers_approval_num AS "workersApprovalNum",
+		a.workers_approval_time AS "workersApprovalTime",
+		a.workers_approval_filepath AS "workersApprovalFilepath",
+		a.design_approval_company AS "designApprovalCompany",
+		a.design_approval_num AS "designApprovalNum",
+		a.design_approval_time AS "designApprovalTime",
+		a.design_approval_filepath AS "designApprovalFilepath",
+		a.construction_design_approval_unit AS "constructionDesignApprovalUnit",
+		a.construction_design_approval_num AS "constructionDesignApprovalNum",
+		a.construction_design_approval_time AS "constructionDesignApprovalTime",
+		a.construction_design_approval_filepath AS "constructionDesignApprovalFilepath"
+	</sql>
+	
+	<sql id="proSimpleApproveJoins">
+	</sql>
+    
+	<select id="get" resultType="ProSimpleApprove">
+		SELECT 
+			<include refid="proSimpleApproveColumns"/>
+		FROM pro_simple_approve a
+		<include refid="proSimpleApproveJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProSimpleApprove">
+		SELECT 
+			<include refid="proSimpleApproveColumns"/>
+		FROM pro_simple_approve a
+		<include refid="proSimpleApproveJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProSimpleApprove">
+		SELECT 
+			<include refid="proSimpleApproveColumns"/>
+		FROM pro_simple_approve a
+		<include refid="proSimpleApproveJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pro_simple_approve(
+			id,
+			project_id,
+			approval_company,
+			approval_num,
+			approval_time,
+			approval_filepath,
+			workers_approval_company,
+			workers_approval_num,
+			workers_approval_time,
+			workers_approval_filepath,
+			design_approval_company,
+			design_approval_num,
+			design_approval_time,
+			design_approval_filepath,
+			construction_design_approval_unit,
+			construction_design_approval_num,
+			construction_design_approval_time,
+			construction_design_approval_filepath
+		) VALUES (
+			#{id},
+			#{projectId},
+			#{approvalCompany},
+			#{approvalNum},
+			#{approvalTime},
+			#{approvalFilepath},
+			#{workersApprovalCompany},
+			#{workersApprovalNum},
+			#{workersApprovalTime},
+			#{workersApprovalFilepath},
+			#{designApprovalCompany},
+			#{designApprovalNum},
+			#{designApprovalTime},
+			#{designApprovalFilepath},
+			#{constructionDesignApprovalUnit},
+			#{constructionDesignApprovalNum},
+			#{constructionDesignApprovalTime},
+			#{constructionDesignApprovalFilepath}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pro_simple_approve SET 	
+			project_id = #{projectId},
+			approval_company = #{approvalCompany},
+			approval_num = #{approvalNum},
+			approval_time = #{approvalTime},
+			approval_filepath = #{approvalFilepath},
+			workers_approval_company = #{workersApprovalCompany},
+			workers_approval_num = #{workersApprovalNum},
+			workers_approval_time = #{workersApprovalTime},
+			workers_approval_filepath = #{workersApprovalFilepath},
+			design_approval_company = #{designApprovalCompany},
+			design_approval_num = #{designApprovalNum},
+			design_approval_time = #{designApprovalTime},
+			design_approval_filepath = #{designApprovalFilepath},
+			construction_design_approval_unit = #{constructionDesignApprovalUnit},
+			construction_design_approval_num = #{constructionDesignApprovalNum},
+			construction_design_approval_time = #{constructionDesignApprovalTime}
+			construction_design_approval_filepath = #{constructionDesignApprovalFilepath}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByProjectId">
+		UPDATE pro_simple_approve SET 	
+			approval_company = #{approvalCompany},
+			approval_num = #{approvalNum},
+			approval_time = #{approvalTime},
+			approval_filepath = #{approvalFilepath},
+			workers_approval_company = #{workersApprovalCompany},
+			workers_approval_num = #{workersApprovalNum},
+			workers_approval_time = #{workersApprovalTime},
+			workers_approval_filepath = #{workersApprovalFilepath},
+			design_approval_company = #{designApprovalCompany},
+			design_approval_num = #{designApprovalNum},
+			design_approval_time = #{designApprovalTime},
+			design_approval_filepath = #{designApprovalFilepath},
+			construction_design_approval_unit = #{constructionDesignApprovalUnit},
+			construction_design_approval_num = #{constructionDesignApprovalNum},
+			construction_design_approval_time = #{constructionDesignApprovalTime},
+			construction_design_approval_filepath = #{constructionDesignApprovalFilepath}
+		WHERE project_id = #{projectId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pro_simple_approve
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

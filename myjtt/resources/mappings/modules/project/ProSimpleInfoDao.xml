@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.project.dao.ProSimpleInfoDao">
+    
+	<sql id="proSimpleInfoColumns">
+		a.id AS "id",
+		a.project_name AS "projectName",
+		a.project_simple_name AS "projectSimpleName",
+		a.project_type AS "projectType",
+		a.project_legal AS "projectLegal",
+		a.site_management_agencies AS "siteManagementAgencies",
+		a.design_unit AS "designUnit",
+		a.build_mileage AS "buildMileage",
+		a.design_speed AS "designSpeed",
+		a.subgrade_width AS "subgradeWidth",
+		a.bridge_ratio AS "bridgeRatio",
+		a.project_estimate AS "projectEstimate",
+		a.construction_reset_fee AS "constructionResetFee",
+		a.app_supervision_time AS "appSupervisionTime",
+		a.man_supervision_time AS "manSupervisionTime",
+		a.approve_duration AS "approveDuration",
+		a.contract_duration AS "contractDuration",
+		a.proposed_start_time AS "proposedStartTime",
+		a.proposed_delivery_time AS "proposedDeliveryTime",
+		<!-- 项目基本信息-审批信息  -->
+		p.approval_company AS "proSimpleApprove.approvalCompany",
+		p.approval_num AS "proSimpleApprove.approvalNum",
+		p.approval_time AS "proSimpleApprove.approvalTime",
+		p.approval_filepath AS "proSimpleApprove.approvalFilepath",
+		p.workers_approval_company AS "proSimpleApprove.workersApprovalCompany",
+		p.workers_approval_num AS "proSimpleApprove.workersApprovalNum",
+		p.workers_approval_time AS "proSimpleApprove.workersApprovalTime",
+		p.workers_approval_filepath AS "proSimpleApprove.workersApprovalFilepath",
+		p.design_approval_company AS "proSimpleApprove.designApprovalCompany",
+		p.design_approval_num AS "proSimpleApprove.designApprovalNum",
+		p.design_approval_time AS "proSimpleApprove.designApprovalTime",
+		p.design_approval_filepath AS "proSimpleApprove.designApprovalFilepath",
+		p.construction_design_approval_unit AS "proSimpleApprove.constructionDesignApprovalUnit",
+		p.construction_design_approval_num AS "proSimpleApprove.constructionDesignApprovalNum",
+		p.construction_design_approval_time AS "proSimpleApprove.constructionDesignApprovalTime",
+		p.construction_design_approval_filepath AS "proSimpleApprove.constructionDesignApprovalFilepath",
+		
+		<!-- 项目桥梁、隧道信息  -->
+		b.extra_large_bridge_num AS "proSimpleBridgeTunnel.extraLargeBridgeNum",
+		b.extra_large_bridge_length AS "proSimpleBridgeTunnel.extraLargeBridgeLength",
+		b.large_bridge_num AS "proSimpleBridgeTunnel.largeBridgeNum",
+		b.large_bridge_length AS "proSimpleBridgeTunnel.largeBridgeLength",
+		b.medium_bridge_num AS "proSimpleBridgeTunnel.mediumBridgeNum",
+		b.medium_bridge_length AS "proSimpleBridgeTunnel.mediumBridgeLength",
+		(b.extra_large_bridge_length + b.large_bridge_length + b.medium_bridge_length) AS "proSimpleBridgeTunnel.bridgeTotalLength",
+		
+		b.extra_long_tunnel_num AS "proSimpleBridgeTunnel.extraLongTunnelNum",
+		b.extra_long_tunnel_length AS "proSimpleBridgeTunnel.extraLongTunnelLength",
+		b.long_tunnel_num AS "proSimpleBridgeTunnel.longTunnelNum",
+		b.long_tunnel_length AS "proSimpleBridgeTunnel.longTunnelLength",
+		b.medium_tunnel_num AS "proSimpleBridgeTunnel.mediumTunnelNum",
+		b.medium_tunnel_length AS "proSimpleBridgeTunnel.mediumTunnelLength",
+		b.short_tunnel_num AS "proSimpleBridgeTunnel.shortTunnelNum",
+		b.short_tunnel_length AS "proSimpleBridgeTunnel.shortTunnelLength",
+		(b.extra_long_tunnel_length + b.long_tunnel_length + b.medium_tunnel_length + b.short_tunnel_length) AS "proSimpleBridgeTunnel.tunnelTotalLength",
+		
+		<!-- 项目施工、监理单位信息  -->
+		s.contract_section_num AS "proSimpleSupervision.contractSectionNum",
+		s.supervision_mode AS "proSimpleSupervision.supervisionMode",
+		s.supervision_section_num AS "proSimpleSupervision.supervisionSectionNum",
+		s.project_contact_username AS "proSimpleSupervision.projectContactUsername",
+		s.project_contact_phone AS "proSimpleSupervision.projectContactPhone",
+		
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="proSimpleInfoJoins">
+		LEFT JOIN pro_simple_approve p ON a.id = p.project_id
+		LEFT JOIN pro_simple_bridge_tunnel b ON a.id = b.project_id
+		LEFT JOIN pro_simple_supervision s ON a.id = s.project_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="ProSimpleInfo">
+		SELECT 
+			<include refid="proSimpleInfoColumns"/>
+		FROM pro_simple_info a
+		<include refid="proSimpleInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProSimpleInfo">
+		SELECT 
+			<include refid="proSimpleInfoColumns"/>
+		FROM pro_simple_info a
+		<include refid="proSimpleInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="projectName != null and projectName != ''">
+				AND a.project_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{projectName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{projectName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{projectName},'%')</if>
+			</if>
+			<if test="projectSimpleName != null and projectSimpleName != ''">
+				AND a.project_simple_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{projectSimpleName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{projectSimpleName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{projectSimpleName},'%')</if>
+			</if>
+			<if test="projectType != null and projectType != ''">
+				AND a.project_type = #{projectType}
+			</if>
+			<if test="proposedStartTime != null and proposedStartTime != ''">
+				AND a.proposed_start_time = #{proposedStartTime}
+			</if>
+			<if test="proposedDeliveryTime != null and proposedDeliveryTime != ''">
+				AND a.proposed_delivery_time = #{proposedDeliveryTime}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProSimpleInfo">
+		SELECT 
+			<include refid="proSimpleInfoColumns"/>
+		FROM pro_simple_info a
+		<include refid="proSimpleInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pro_simple_info(
+			id,
+			project_name,
+			project_simple_name,
+			project_type,
+			project_legal,
+			site_management_agencies,
+			design_unit,
+			build_mileage,
+			design_speed,
+			subgrade_width,
+			bridge_ratio,
+			project_estimate,
+			construction_reset_fee,
+			app_supervision_time,
+			man_supervision_time,
+			approve_duration,
+			contract_duration,
+			proposed_start_time,
+			proposed_delivery_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{projectName},
+			#{projectSimpleName},
+			#{projectType},
+			#{projectLegal},
+			#{siteManagementAgencies},
+			#{designUnit},
+			#{buildMileage},
+			#{designSpeed},
+			#{subgradeWidth},
+			#{bridgeRatio},
+			#{projectEstimate},
+			#{constructionResetFee},
+			#{appSupervisionTime},
+			#{manSupervisionTime},
+			#{approveDuration},
+			#{contractDuration},
+			#{proposedStartTime},
+			#{proposedDeliveryTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pro_simple_info SET 	
+			project_name = #{projectName},
+			project_simple_name = #{projectSimpleName},
+			project_type = #{projectType},
+			project_legal = #{projectLegal},
+			site_management_agencies = #{siteManagementAgencies},
+			design_unit = #{designUnit},
+			build_mileage = #{buildMileage},
+			design_speed = #{designSpeed},
+			subgrade_width = #{subgradeWidth},
+			bridge_ratio = #{bridgeRatio},
+			project_estimate = #{projectEstimate},
+			construction_reset_fee = #{constructionResetFee},
+			app_supervision_time = #{appSupervisionTime},
+			man_supervision_time = #{manSupervisionTime},
+			approve_duration = #{approveDuration},
+			contract_duration = #{contractDuration},
+			proposed_start_time = #{proposedStartTime},
+			proposed_delivery_time = #{proposedDeliveryTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE pro_simple_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="findAllProjectNames" resultType="ProSimpleInfo">
+		SELECT 
+			a.id AS "id",
+			a.project_name AS "projectName",
+			a.project_simple_name AS "projectSimpleName",
+			a.project_type AS "projectType"
+		FROM pro_simple_info a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.update_date DESC
+	</select>
+	
+	<!-- 首页统计安全信息 -->
+	<select id="selectSafeReportInfo" resultType="ProSimpleInfo">
+		SELECT 
+			a.id AS "id",
+			a.project_name AS "projectName",
+			a.project_simple_name AS "projectSimpleName",
+			a.spmpid AS "safeProductInfo.productUsers",
+			a.ssceid AS "safeProductInfo.consSub",
+			a.sseid AS "safeProductInfo.specialSub",
+			a.sseopid AS "safeProductInfo.specialOperatorUsers",
+			a.ssopid AS "safeProductInfo.specialSubUsers"
+		FROM safe_product_normalinfo a
+	</select>
+	
+	
+	<!-- 首页质量信息一览表 -->
+	<select id="selectQualityReportInfo" resultType="ProSimpleInfo">
+		SELECT 
+			a.id AS "id",
+			a.project_name AS "projectName",
+			a.project_simple_name AS "projectSimpleName",
+			a.ssid AS "qualityReportInfo.specialSubNum",
+			a.bcid AS "qualityReportInfo.buildCompanyNum",
+			a.ccid AS "qualityReportInfo.constrCompanyNum",
+			a.scid AS "qualityReportInfo.supervisonCompanyNum",
+			a.tcid AS "qualityReportInfo.testRoomNum",
+			a.ctcid AS "qualityReportInfo.constrTestRoomNum",
+			a.tccid AS "qualityReportInfo.thirdCheckNum"
+		FROM quality_report_info a
+	</select>
+	
+</mapper>

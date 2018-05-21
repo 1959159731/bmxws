@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.quality.dao.QualityTestroomRemarkUserinfoDao">
+    
+	<sql id="qualityTestroomRemarkUserinfoColumns">
+		a.id AS "id",
+		a.remark_id AS "remarkId",
+		a.remark_usertype AS "remarkUsertype",
+		a.name AS "name",
+		a.qualifications AS "qualifications",
+		a.qualification_cert_num AS "qualificationCertNum",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<sql id="qualityTestroomRemarkUserinfoJoins">
+	</sql>
+    
+	<select id="get" resultType="QualityTestroomRemarkUserinfo">
+		SELECT 
+			<include refid="qualityTestroomRemarkUserinfoColumns"/>
+		FROM quality_testroom_remark_userinfo a
+		<include refid="qualityTestroomRemarkUserinfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="QualityTestroomRemarkUserinfo">
+		SELECT 
+			<include refid="qualityTestroomRemarkUserinfoColumns"/>
+		FROM quality_testroom_remark_userinfo a
+		<include refid="qualityTestroomRemarkUserinfoJoins"/>
+		<where>
+			<if test="remarkId != null and remarkId != ''">
+				AND a.remark_id = #{remarkId}
+			</if>
+			<if test="remarkUsertype != null and remarkUsertype != ''">
+				AND a.remark_usertype = #{remarkUsertype}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QualityTestroomRemarkUserinfo">
+		SELECT 
+			<include refid="qualityTestroomRemarkUserinfoColumns"/>
+		FROM quality_testroom_remark_userinfo a
+		<include refid="qualityTestroomRemarkUserinfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO quality_testroom_remark_userinfo(
+			id,
+			remark_id,
+			remark_usertype,
+			name,
+			qualifications,
+			qualification_cert_num,
+			remarks
+		) VALUES (
+			#{id},
+			#{remarkId},
+			#{remarkUsertype},
+			#{name},
+			#{qualifications},
+			#{qualificationCertNum},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_testroom_remark_userinfo SET 	
+			remark_id = #{remarkId},
+			remark_usertype = #{remarkUsertype},
+			name = #{name},
+			qualifications = #{qualifications},
+			qualification_cert_num = #{qualificationCertNum},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM quality_testroom_remark_userinfo
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByRemarkId">
+		DELETE FROM quality_testroom_remark_userinfo
+		WHERE remark_id = #{remarkId}
+	</update>
+	
+</mapper>

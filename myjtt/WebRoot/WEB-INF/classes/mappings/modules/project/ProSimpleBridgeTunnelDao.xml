@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.project.dao.ProSimpleBridgeTunnelDao">
+    
+	<sql id="proSimpleBridgeTunnelColumns">
+		a.id AS "id",
+		a.project_id AS "projectId",
+		a.extra_large_bridge_num AS "extraLargeBridgeNum",
+		a.extra_large_bridge_length AS "extraLargeBridgeLength",
+		a.large_bridge_num AS "largeBridgeNum",
+		a.large_bridge_length AS "largeBridgeLength",
+		a.medium_bridge_num AS "mediumBridgeNum",
+		a.medium_bridge_length AS "mediumBridgeLength",
+		a.extra_long_tunnel_num AS "extraLongTunnelNum",
+		a.extra_long_tunnel_length AS "extraLongTunnelLength",
+		a.long_tunnel_num AS "longTunnelNum",
+		a.long_tunnel_length AS "longTunnelLength",
+		a.medium_tunnel_num AS "mediumTunnelNum",
+		a.medium_tunnel_length AS "mediumTunnelLength",
+		a.short_tunnel_num AS "shortTunnelNum",
+		a.short_tunnel_length AS "shortTunnelLength"
+	</sql>
+	
+	<sql id="proSimpleBridgeTunnelJoins">
+	</sql>
+    
+	<select id="get" resultType="ProSimpleBridgeTunnel">
+		SELECT 
+			<include refid="proSimpleBridgeTunnelColumns"/>
+		FROM pro_simple_bridge_tunnel a
+		<include refid="proSimpleBridgeTunnelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProSimpleBridgeTunnel">
+		SELECT 
+			<include refid="proSimpleBridgeTunnelColumns"/>
+		FROM pro_simple_bridge_tunnel a
+		<include refid="proSimpleBridgeTunnelJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProSimpleBridgeTunnel">
+		SELECT 
+			<include refid="proSimpleBridgeTunnelColumns"/>
+		FROM pro_simple_bridge_tunnel a
+		<include refid="proSimpleBridgeTunnelJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pro_simple_bridge_tunnel(
+			id,
+			project_id,
+			extra_large_bridge_num,
+			extra_large_bridge_length,
+			large_bridge_num,
+			large_bridge_length,
+			medium_bridge_num,
+			medium_bridge_length,
+			extra_long_tunnel_num,
+			extra_long_tunnel_length,
+			long_tunnel_num,
+			long_tunnel_length,
+			medium_tunnel_num,
+			medium_tunnel_length,
+			short_tunnel_num,
+			short_tunnel_length
+		) VALUES (
+			#{id},
+			#{projectId},
+			#{extraLargeBridgeNum},
+			#{extraLargeBridgeLength},
+			#{largeBridgeNum},
+			#{largeBridgeLength},
+			#{mediumBridgeNum},
+			#{mediumBridgeLength},
+			#{extraLongTunnelNum},
+			#{extraLongTunnelLength},
+			#{longTunnelNum},
+			#{longTunnelLength},
+			#{mediumTunnelNum},
+			#{mediumTunnelLength},
+			#{shortTunnelNum},
+			#{shortTunnelLength}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pro_simple_bridge_tunnel SET 	
+			project_id = #{projectId},
+			extra_large_bridge_num = #{extraLargeBridgeNum},
+			extra_large_bridge_length = #{extraLargeBridgeLength},
+			large_bridge_num = #{largeBridgeNum},
+			large_bridge_length = #{largeBridgeLength},
+			medium_bridge_num = #{mediumBridgeNum},
+			medium_bridge_length = #{mediumBridgeLength},
+			extra_long_tunnel_num = #{extraLongTunnelNum},
+			extra_long_tunnel_length = #{extraLongTunnelLength},
+			long_tunnel_num = #{longTunnelNum},
+			long_tunnel_length = #{longTunnelLength},
+			medium_tunnel_num = #{mediumTunnelNum},
+			medium_tunnel_length = #{mediumTunnelLength},
+			short_tunnel_num = #{shortTunnelNum},
+			short_tunnel_length = #{shortTunnelLength}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByProjectId">
+		UPDATE pro_simple_bridge_tunnel SET 	
+			extra_large_bridge_num = #{extraLargeBridgeNum},
+			extra_large_bridge_length = #{extraLargeBridgeLength},
+			large_bridge_num = #{largeBridgeNum},
+			large_bridge_length = #{largeBridgeLength},
+			medium_bridge_num = #{mediumBridgeNum},
+			medium_bridge_length = #{mediumBridgeLength},
+			extra_long_tunnel_num = #{extraLongTunnelNum},
+			extra_long_tunnel_length = #{extraLongTunnelLength},
+			long_tunnel_num = #{longTunnelNum},
+			long_tunnel_length = #{longTunnelLength},
+			medium_tunnel_num = #{mediumTunnelNum},
+			medium_tunnel_length = #{mediumTunnelLength},
+			short_tunnel_num = #{shortTunnelNum},
+			short_tunnel_length = #{shortTunnelLength}
+		WHERE project_id = #{projectId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pro_simple_bridge_tunnel
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

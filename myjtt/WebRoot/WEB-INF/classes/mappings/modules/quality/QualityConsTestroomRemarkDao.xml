@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.modules.quality.dao.QualityConsTestroomRemarkDao">
+    
+	<sql id="qualityConsTestroomRemarkColumns">
+		a.id AS "id",
+		a.project_id AS "proSimpleInfo.id",
+		a.contract_section_label AS "contractSectionLabel",
+		a.maternal_laboratory AS "maternalLaboratory",
+		a.qa_certificate_num AS "qacertificateNum",
+		a.authorized_person AS "authorizedPerson",
+		a.remark_users AS "remarkUsers",
+		a.detection_project_parameter AS "detectionProjectParameter",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		p.project_simple_name AS "proSimpleInfo.projectSimpleName"
+	</sql>
+	
+	<sql id="qualityConsTestroomRemarkJoins">
+		LEFT JOIN pro_simple_info p ON p.id = a.project_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="QualityConsTestroomRemark">
+		SELECT 
+			<include refid="qualityConsTestroomRemarkColumns"/>
+		FROM quality_cons_testroom_remark a
+		<include refid="qualityConsTestroomRemarkJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="QualityConsTestroomRemark">
+		SELECT 
+			<include refid="qualityConsTestroomRemarkColumns"/>
+		FROM quality_cons_testroom_remark a
+		<include refid="qualityConsTestroomRemarkJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="proSimpleInfo != null">
+				<if test="proSimpleInfo.id != null and proSimpleInfo.id != ''">
+					AND a.project_id = #{proSimpleInfo.id }
+				</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QualityConsTestroomRemark">
+		SELECT 
+			<include refid="qualityConsTestroomRemarkColumns"/>
+		FROM quality_cons_testroom_remark a
+		<include refid="qualityConsTestroomRemarkJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>	
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO quality_cons_testroom_remark(
+			id,
+			project_id,
+			contract_section_label,
+			maternal_laboratory,
+			qa_certificate_num,
+			authorized_person,
+			remark_users,
+			detection_project_parameter,
+			create_by,
+			update_by,
+			create_date,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{proSimpleInfo.id},
+			#{contractSectionLabel},
+			#{maternalLaboratory},
+			#{qacertificateNum},
+			#{authorizedPerson},
+			#{remarkUsers},
+			#{detectionProjectParameter},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE quality_cons_testroom_remark SET 	
+			project_id = #{proSimpleInfo.id},
+			contract_section_label = #{contractSectionLabel},
+			maternal_laboratory = #{maternalLaboratory},
+			qa_certificate_num = #{qacertificateNum},
+			authorized_person = #{authorizedPerson},
+			remark_users = #{remarkUsers},
+			detection_project_parameter = #{detectionProjectParameter},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE quality_cons_testroom_remark SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
